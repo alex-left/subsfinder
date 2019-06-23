@@ -1,27 +1,35 @@
+#!/usr/bin/python3
 import subdivx
 import sys
 import re
+import argparse
 from pathlib import Path
 
 tv_pattern = r'^(.+)([sS][0-9]{1,2}[\.\-_]?[eE][0-9]{1,2})|([0-9]{1,2}[xX][0-9]{1,2}).*'
 
-arg = sys.argv[1]
-try:
-    filt = sys.argv[2]
-except IndexError:
-    pass
+def argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("search", type=str)
+    parser.add_argument("-o", "--output", type=str, default=None)
+    parser.add_argument("-f", "--filter", type=str, default=None)
+    return parser.parse_args()
 
-subs = subdivx.search(arg)
 
-file = Path(arg)
+args = argparser()
+file_to_search = args.search
+filt = args.filter
+output = args.output
 
-tv_file = re.search(tv_pattern, file.stem)
+input_file = Path(file_to_search)
+
+tv_file = re.search(tv_pattern, input_file.stem)
 
 if tv_file:
     title, episode = tv_file.groups()[:2]
     subs = subdivx.search("{} {}".format(title, episode))
 else:
-    subs = subdivx.search(arg)
+    print("entra")
+    subs = subdivx.search(file_to_search)
 
 subs = sorted(subs, key=lambda x: x.downloads, reverse=True)
 
@@ -44,5 +52,10 @@ for i, n in enumerate(chosen_subs):
     print(i, ">", n["filename"])
 s = input("choice sub")
 sub = chosen_subs[int(s)]
-with open(file.stem+sub["extension"], "wb") as f:
+
+if output:
+    output_file = output
+else:
+    output_file = input_file.stem
+with open(output_file+sub["extension"], "wb") as f:
     f.write(sub["data"])
