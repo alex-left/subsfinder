@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 import subdivx
-import sys
 import re
 import argparse
 from pathlib import Path
 
 tv_pattern = r'^(.+)([sS][0-9]{1,2}[\.\-_]?[eE][0-9]{1,2})|([0-9]{1,2}[xX][0-9]{1,2}).*'
+
 
 def argparser():
     parser = argparse.ArgumentParser()
@@ -46,7 +46,7 @@ for i, sub in enumerate(subs):
 choice = input("choose an option ")
 
 chosen_sub = subs[int(choice)]
-chosen_subs = chosen_sub.get_subtitle()
+chosen_subs = chosen_sub.get_subtitles()
 
 for i, n in enumerate(chosen_subs):
     print(i, ">", n["filename"])
